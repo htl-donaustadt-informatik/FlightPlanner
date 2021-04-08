@@ -79,7 +79,7 @@ namespace FlightPlanner
                 Console.WriteLine();
                 Console.WriteLine("--- Update your name ---");
                 Console.WriteLine("Enter your new name: ");
-                // Elon Musk's daughter's name: X Æ A-Xii
+                // Elon Musk's son's name: X Æ A-Xii
                 // A nice name but this one is better to hack (SQL Injection) the database: 
                 // X Æ A-Xii' where Customer.Id = 1003; update Booking set Booking.Price = 0 where Booking.CustomerId = 1003; --
                 string newName = Console.ReadLine();

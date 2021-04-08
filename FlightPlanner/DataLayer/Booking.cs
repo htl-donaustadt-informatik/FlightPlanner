@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FlightPlanner.DataLayer
 {
-    class Booking
+    class Booking 
     {
 
         public Booking()
