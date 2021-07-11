@@ -73,8 +73,9 @@ namespace FlightPlanner
                 flightPlannerDataModel.DeleteFlight(204);
 
                 BookingDataMapper bookingDataMapper = new BookingDataMapper(connectionString);
+                // Stored procedure
                 // bookingDataMapper.TestStoredProcedure();
-                bookingDataMapper.Create(new Booking(209, 1005, 3, 2, 11199m));
+                // bookingDataMapper.Create(new Booking(209, 1005, 3, 2, 11199m));
 
                 Console.WriteLine();
                 Console.WriteLine("--- Update your name ---");
