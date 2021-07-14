@@ -1,6 +1,9 @@
 ﻿using FlightPlanner.DataLayer;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
@@ -32,10 +35,31 @@ namespace FlightPlanner
                 // Inital Catalog -> name of database
                 // Integrated Security=SSPI -> use Windows Authentication (wie im Connection Dialog von Visual Studio)
                 // Integrated Security=false -> use SQL Server Authentication, you must have an SQL Server database user account
+
                 // TODO: it is best practice to specify the connection string in app.config/web.config
                 // string connectionString = @"Data Source=delphin;Initial Catalog=FlightPlanner;Integrated Security=SSPI";
                 // string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDb;Initial Catalog=FlightPlanner;Integrated Security=false;uid=Reinhard;password=reinhard";
-                string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDb;Initial Catalog=FlightPlanner;Integrated Security=SSPI";
+                // string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDb;Initial Catalog=FlightPlanner;Integrated Security=SSPI";
+
+                string connectionString = ConfigurationManager.ConnectionStrings["FlightPlannerConnection"].ConnectionString;
+                string providerName = ConfigurationManager.ConnectionStrings["FlightPlannerConnection"].ProviderName;
+  
+                // IMPORTANT: if MySQL should be used the MySQL Connector for .NET (short name: Connector/Net) must be installed.
+                // This program  uses the MySQL factory which must be registered in app.config to be useable.
+
+                // https://stackoverflow.com/questions/9840303/abstract-factory-and-factory-pattern-in-dbproviderfactory-ado-net
+                // Let's decide to use a SQL Server. Improvement: instead of hard-coding this here, we could let another method
+                // decide what factory to use based on the data provider name from the app.config file.
+                //IOwnConnectionFactory ownConnectionFactory = new OwnSqlServerConnectionFactory(connectionString);
+                //CustomerDataMapper customerDataMapperOwn = new CustomerDataMapper(ownConnectionFactory, connectionString);
+                //string test = customerDataMapperOwn.TestOwnConnectionFactory();
+                //Console.WriteLine("$Testing ownConnectionFactory. Query returned: {test}");
+
+                // Let's use the already implemented solution of ADO.NET instead of out own solution.
+                DbProviderFactory adoNetFactory = DbProviderFactories.GetFactory(providerName);
+                CustomerDataMapper customerDataMapper = new CustomerDataMapper(adoNetFactory, connectionString);
+                string test1 = customerDataMapper.TestAdoNetProviderFactory();
+                Console.WriteLine($"Testing ADO.NET's data provider factory. Query returned: {test1}");
 
                 // The script to execute must not contain GO!
                 // Recreate the database each time the program is run so that we always work with the same data for testing
@@ -84,9 +108,7 @@ namespace FlightPlanner
                 // A nice name but this one is better to hack (SQL Injection) the database: 
                 // X Æ A-Xii' where Customer.Id = 1003; update Booking set Booking.Price = 0 where Booking.CustomerId = 1003; --
                 string newName = Console.ReadLine();
-
-                CustomerDataMapper customerDataMapper = new CustomerDataMapper(connectionString);
-
+               
                 // changes more than 2 data records (rows)
                 rowCount = customerDataMapper.UpdateLastName(1003, newName);
                 if (rowCount < 1)
