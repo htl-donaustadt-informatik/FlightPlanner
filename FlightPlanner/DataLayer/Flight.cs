@@ -14,7 +14,7 @@ namespace FlightPlanner.DataLayer
         public string Destination { get; set; }
         public int Duration { get; set; }
         public DateTime DepartureDate { get; set; }
-        public int PlaneId { get; set; }
+        public int? PlaneId { get; set; }
 
         public override string ToString()
         {

@@ -38,14 +38,14 @@ namespace FlightPlanner.DataLayer
                 IDbCommand selectFlightCommand = databaseConnection.CreateCommand();
                 
                 // Aus Performance Gründen alle Datensätze auf einmal lesen, nicht die Methode Read() dieser Klasse verwenden.
-                selectFlightCommand.CommandText = "select * from Flight";
+                selectFlightCommand.CommandText = "select * from Flight where Id = 211";
 
                 databaseConnection.Open();
 
                 // erzeuge den DataReader (der das zeilenweise Auslesen erlaubt) aus dem Command
                 IDataReader flightReader = selectFlightCommand.ExecuteReader();
                 // gibt es nur einen Wert ist auch .ExecuteScalar möglich
-                // für update, insert, ...  ist aCommand.ExecuteNonQuery  zuständig
+                // für update, insert, ...  ist ExecuteNonQuery zuständig
                 
                 //jetzt in der Schleife durch das Ergebnis des Select Befehls
                 while (flightReader.Read())
@@ -57,7 +57,15 @@ namespace FlightPlanner.DataLayer
                     flight.Destination = flightReader.GetValue(2).ToString();
                     flight.Duration = (int)flightReader["Duration"]; // Column 3 GetInt32(3)
                     flight.DepartureDate = flightReader.GetDateTime(4);
-                    flight.PlaneId = flightReader.GetInt32(5);
+
+                    if (DBNull.Value.Equals(flightReader.GetValue(5)))
+                    {
+                        flight.PlaneId = null; // C#'s null represents DBNull=NULL (from SQL)
+                    }
+                    else
+                    {
+                        flight.PlaneId = flightReader.GetInt32(5);
+                    }
 
                     flights.Add(flight);
                 }
@@ -86,10 +94,17 @@ namespace FlightPlanner.DataLayer
                 // erzeuge zuerst ein zur Sql Server Connection passendes Command, weise Select Befehl zu
                 IDbCommand createFlightCommand = databaseConnection.CreateCommand();
                 // INSERT INTO Flight VALUES(203, 'Berlin', 'Paris', 120, '20180202', 21);
+
+                string planeId = "NULL";
+                if (flight.PlaneId != null)
+                {
+                    planeId = Convert.ToString(flight.PlaneId);
+                }
+
                 createFlightCommand.CommandText =
                    $"insert into Flight values ({flight.Id}, '{flight.Departure}', '{flight.Destination}', " +
                    $"{flight.Duration}, '{flight.DepartureDate.ToString("s", System.Globalization.CultureInfo.InvariantCulture)}', " + 
-                   $"{flight.PlaneId});";
+                   $"{planeId});";
 
                 // Console.WriteLine NICHT an dieser Stelle in einem professionellen Programm verwenden, 
                 // Methode soll auch bei GUI Anwendungen funktionieren 
@@ -108,12 +123,19 @@ namespace FlightPlanner.DataLayer
             {
                 // erzeuge zuerst ein zur Sql Server Connection passendes Command, weise Select Befehl zu
                 IDbCommand updateFlightCommand = databaseConnection.CreateCommand();
+
+                string planeId = "NULL";
+                if (flight.PlaneId != null)
+                {
+                    planeId = Convert.ToString(flight.PlaneId);
+                }
+
                 updateFlightCommand.CommandText = 
                    $"update Flight set Departure = '{flight.Departure}', " +
                    $"Destination = '{flight.Destination}', " +
                    $"Duration = {flight.Duration}, " +
                    $"DepartureDate = '{flight.DepartureDate.ToString("s", System.Globalization.CultureInfo.InvariantCulture)}', " +
-                   $"PlaneId = {flight.PlaneId} " +
+                   $"PlaneId = {planeId} " +
                    $"where Flight.Id = {flight.Id};";
 
                 // Console.WriteLine NICHT an dieser Stelle in einem professionellen Programm verwenden, 

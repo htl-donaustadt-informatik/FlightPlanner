@@ -83,10 +83,10 @@ namespace FlightPlanner
                     Destination = "Budapest",
                     DepartureDate = DateTime.Now,
                     Duration = 40,
-                    PlaneId = 21
+                    PlaneId = null
                 };
 
-                // flightDataMapper.Create(testFlight);
+                flightDataMapper.Create(testFlight);
 
                 testFlight.Duration = 450;
                 rowCount = flightDataMapper.Update(testFlight);
