@@ -268,7 +268,7 @@ INSERT INTO Flight VALUES (207, 'Paris', 'London', 120, '20190202', 33);
 INSERT INTO Flight VALUES (208, 'Hawaii', 'Atlanta', 150, '20140503', 11);
 INSERT INTO Flight VALUES (209, 'Moskau', 'Paris', 210, '20130213', 10);
 INSERT INTO Flight VALUES (210, 'Berlin', 'Moskau', 120, '20120112', 33);
-
+INSERT INTO Flight VALUES (211, 'Vienna', 'Venice', 80, '20120112', NULL);
 
 INSERT INTO Customer VALUES (1000, 'Scott', '20020110', 'Vienna');
 INSERT INTO Customer VALUES (1001, 'Meier', '20011231', 'Prague');
